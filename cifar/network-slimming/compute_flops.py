@@ -14,7 +14,7 @@ def print_model_param_nums(model=None):
     print('  + Number of params: %.2fM' % (total / 1e6))
     return total
 
-def print_model_param_flops(model=None, input_res=224, multiply_adds=True):
+def print_model_param_flops(model=None, input_res=224, multiply_adds=False):
 
     prods = {}
     def save_hook(name):
@@ -109,6 +109,6 @@ def print_model_param_flops(model=None, input_res=224, multiply_adds=True):
 
     total_flops = (sum(list_conv) + sum(list_linear) + sum(list_bn) + sum(list_relu) + sum(list_pooling) + sum(list_upsample))
 
-    print('  + Number of FLOPs: %.2fG' % (total_flops / 1e9))
+    print('  + Number of FLOPs: %f' % total_flops )
 
     return total_flops
