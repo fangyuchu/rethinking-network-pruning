@@ -11,7 +11,7 @@ from torchvision import datasets, transforms
 from torch.autograd import Variable
 import random
 import models
-net='resnet'
+net='vgg'
 # os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 
 # Training settings
