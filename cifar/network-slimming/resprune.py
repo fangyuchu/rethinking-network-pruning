@@ -9,7 +9,7 @@ from torchvision import datasets, transforms
 
 from models import *
 import compute_flops
-os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # Prune settings
 parser = argparse.ArgumentParser(description='PyTorch Slimming CIFAR prune')
@@ -28,14 +28,16 @@ parser.add_argument('--save', default='', type=str, metavar='PATH',
                     help='path to save pruned model (default: none)')
 args = parser.parse_args()
 
-prune_rate_list=[0.75,0.8,0.83,0.85,0.87,0.9,0.93,0.95,0.98]
+prune_rate_list=[0.4,0.5,0.6,0.7,0.75,0.8,0.83,0.85,0.87,0.9,0.93,0.95,0.98]
+# prune_rate_list=[]
 tolerance=0.0005
-percent=0.8
+percent=0.5
 delta=0.0002
 # args.model='/home/swim/fang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601/model_best.pth.tar'
 # args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_3113/model_best.pth.tar'
-args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_6427/model_best.pth.tar'
+# args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_6427/model_best.pth.tar'
 # args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_8081/model_best.pth.tar'
+args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601/model_best.pth.tar'
 args.save=args.model[:-18]
 total_flop=flop_ramained=126550666
 args.cuda = not args.no_cuda and torch.cuda.is_available()
@@ -44,7 +46,6 @@ if not os.path.exists(args.save):
     os.makedirs(args.save)
 
 model = resnet(depth=args.depth, dataset=args.dataset)
-
 if args.cuda:
     model.cuda()
 if args.model:
@@ -202,7 +203,7 @@ for prune_ratio in prune_rate_list:
 
                 m1.weight.data = m0.weight.data[:, idx0].clone()
                 m1.bias.data = m0.bias.data.clone()
-        flop_ramained=compute_flops.print_model_param_flops(model=newmodel.cpu(), input_res=32, multiply_adds=False)
+        flop_ramained=0.5*compute_flops.print_model_param_flops(model=newmodel.cpu(), input_res=32, multiply_adds=False)
 
     torch.save({'cfg': cfg, 'state_dict': newmodel.state_dict()}, os.path.join(args.save,str(int(prune_ratio*100))+ 'pruned.pth.tar'))
     #
