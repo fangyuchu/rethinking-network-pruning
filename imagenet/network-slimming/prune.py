@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 from torchvision import datasets, transforms
-
+import compute_flops
 from vgg import slimmingvgg as vgg11
 
 
@@ -90,7 +90,7 @@ for k, m in enumerate(model.modules()):
             format(k, mask.shape[0], int(torch.sum(mask))))
     elif isinstance(m, nn.MaxPool2d):
         cfg.append('M')
-
+compute_flops.count_model_param_flops(model=None, input_res=224, multiply_adds=False)
 torch.save({'cfg': cfg, 'state_dict': model.state_dict()}, os.path.join(args.save, 'pruned.pth.tar'))
 
 pruned_ratio = pruned/total
@@ -136,7 +136,7 @@ def test():
 
     end = time.time()
     for i, (input, target) in enumerate(val_loader):
-        target = target.cuda(async=True)
+        target = target.cuda()
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
 

@@ -14,7 +14,7 @@ def print_model_param_nums(model=None):
     total = sum([param.nelement() if param.requires_grad else 0 for param in model.parameters()])
     print('  + Number of params: %.2fM' % (total / 1e6))
 
-def count_model_param_flops(model=None, input_res=224, multiply_adds=True):
+def count_model_param_flops(model=None, input_res=224, multiply_adds=False):
 
     prods = {}
     def save_hook(name):

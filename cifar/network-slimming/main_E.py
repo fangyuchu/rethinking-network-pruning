@@ -11,7 +11,7 @@ from torchvision import datasets, transforms
 from torch.autograd import Variable
 from datetime import datetime
 import models
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Slimming CIFAR training')
@@ -55,16 +55,22 @@ parser.add_argument('--depth', default=164, type=int,
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 args.arch='resnet'
-base_path='/home/swim/fang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601'
+# base_path='/home/swim/fang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601'
 # base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_3113'
 base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_6427'
+
+
+# base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/vgg_6871'
+# base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/vgg_8578'
+# base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/vgg_9476'
 if args.arch == 'resnet':
     args.depth=164
 elif args.arch == 'vgg':
     args.depth=19
 prune_rate_list=[0.75,0.8,0.83,0.85,0.87,0.9,0.93,0.95,0.98]
+prune_rate_list=[0.9,0.87]
 
-
+print(base_path)
 for prune_ratio in prune_rate_list:
     print('current prune_ratio is:',prune_ratio)
     args.save=os.path.join(base_path,str(int(prune_ratio*100)))

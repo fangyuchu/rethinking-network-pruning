@@ -12,7 +12,7 @@ from torch.autograd import Variable
 import random
 import models
 net='vgg'
-# os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Slimming CIFAR training')
