@@ -15,7 +15,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Slimming CIFAR training')
-parser.add_argument('--dataset', type=str, default='cifar10',
+parser.add_argument('--dataset', type=str, default='cifar100',
                     help='training dataset (default: cifar100)')
 parser.add_argument('--sparsity-regularization', '-sr', dest='sr', action='store_true',
                     help='train with channel sparsity regularization')
@@ -55,21 +55,23 @@ parser.add_argument('--depth', default=164, type=int,
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 args.arch='resnet'
+#cifar10
 # base_path='/home/swim/fang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601'
 # base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_3113'
 # base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_6427'
-base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601'
-
-
+# base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601'
 # base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/vgg_6871'
 # base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/vgg_8578'
 # base_path='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/vgg_9476'
+#cifar100
+base_path='/home/victorfang/PycharmProjects/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet56_9326'
+# base_path='/home/victorfang/PycharmProjects/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet56_9393'
 if args.arch == 'resnet':
     args.depth=164
 elif args.arch == 'vgg':
     args.depth=19
-prune_rate_list=[0.75,0.8,0.83,0.85,0.87,0.9,0.93,0.95,0.98]
-prune_rate_list=[0.75,0.8,0.83,0.85,0.87,0.4,0.5,0.6]
+prune_rate_list=[0.75,0.8,0.83,0.85,0.87,0.9,0.93,0.5,0.6,0.65,0.95,0.98]
+# prune_rate_list=[0.75,0.8,0.83,0.85,0.87,0.4,0.5,0.6]
 
 print(base_path)
 for prune_ratio in prune_rate_list:
@@ -104,7 +106,7 @@ for prune_ratio in prune_rate_list:
             batch_size=args.test_batch_size, shuffle=True, **kwargs)
     else:
         train_loader = torch.utils.data.DataLoader(
-            datasets.CIFAR100('./data.cifar100', train=True, download=True,
+            datasets.CIFAR100('./data/dataset/cifar100', train=True, download=True,
                            transform=transforms.Compose([
                                transforms.Pad(4),
                                transforms.RandomCrop(32),
@@ -114,7 +116,7 @@ for prune_ratio in prune_rate_list:
                            ])),
             batch_size=args.batch_size, shuffle=True, **kwargs)
         test_loader = torch.utils.data.DataLoader(
-            datasets.CIFAR100('./data.cifar100', train=False, transform=transforms.Compose([
+            datasets.CIFAR100('./data/dataset/cifar100', train=False, transform=transforms.Compose([
                                transforms.ToTensor(),
                                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
                            ])),

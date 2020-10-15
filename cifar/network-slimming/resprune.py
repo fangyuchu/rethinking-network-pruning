@@ -13,7 +13,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # Prune settings
 parser = argparse.ArgumentParser(description='PyTorch Slimming CIFAR prune')
-parser.add_argument('--dataset', type=str, default='cifar10',
+parser.add_argument('--dataset', type=str, default='cifar100',
                     help='training dataset (default: cifar10)')
 parser.add_argument('--test-batch-size', type=int, default=128, metavar='N',
                     help='input batch size for testing (default: 256)')
@@ -29,17 +29,22 @@ parser.add_argument('--save', default='', type=str, metavar='PATH',
 args = parser.parse_args()
 
 prune_rate_list=[0.4,0.5,0.6,0.7,0.75,0.8,0.83,0.85,0.87,0.9,0.93,0.95,0.98]
-# prune_rate_list=[]
+prune_rate_list=[0.65]
 tolerance=0.0005
 percent=0.5
 delta=0.0002
+#cifar10
 # args.model='/home/swim/fang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601/model_best.pth.tar'
 # args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_3113/model_best.pth.tar'
 # args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_6427/model_best.pth.tar'
 # args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_8081/model_best.pth.tar'
-args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601/model_best.pth.tar'
+# args.model='/home/victorfang/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet_1601/model_best.pth.tar'
+#cifar100
+args.model='/home/victorfang/PycharmProjects/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet56_9326/model_best.pth.tar'
+args.model='/home/victorfang/PycharmProjects/rethinking-network-pruning/cifar/network-slimming/data/model_saved/resnet56_9393/model_best.pth.tar'
+
 args.save=args.model[:-18]
-total_flop=flop_ramained=126550666
+total_flop=flop_ramained=257135716
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 if not os.path.exists(args.save):
@@ -203,7 +208,7 @@ for prune_ratio in prune_rate_list:
 
                 m1.weight.data = m0.weight.data[:, idx0].clone()
                 m1.bias.data = m0.bias.data.clone()
-        flop_ramained=0.5*compute_flops.print_model_param_flops(model=newmodel.cpu(), input_res=32, multiply_adds=False)
+        flop_ramained=compute_flops.print_model_param_flops(model=newmodel.cpu(), input_res=32, multiply_adds=False)
 
     torch.save({'cfg': cfg, 'state_dict': newmodel.state_dict()}, os.path.join(args.save,str(int(prune_ratio*100))+ 'pruned.pth.tar'))
     #

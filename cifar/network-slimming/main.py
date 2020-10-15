@@ -11,12 +11,12 @@ from torchvision import datasets, transforms
 from torch.autograd import Variable
 import random
 import models
-net='vgg'
 os.environ["CUDA_VISIBLE_DEVICES"] = "4"
-
+net='resnet56'
+dataset='cifar100'
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Slimming CIFAR training')
-parser.add_argument('--dataset', type=str, default='cifar10',
+parser.add_argument('--dataset', type=str, default=dataset,
                     help='training dataset (default: cifar100)')
 parser.add_argument('--sparsity-regularization', '-sr', dest='sr', action='store_true',
                     help='train with channel sparsity regularization')
@@ -44,7 +44,7 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 parser.add_argument('--log-interval', type=int, default=100, metavar='N',
                     help='how many batches to wait before logging training status')
-parser.add_argument('--save', default='./data/model_saved/'+net+'_'+str(random.randint(1, 10000)), type=str, metavar='PATH',
+parser.add_argument('--save', default='./data/model_saved/'+net+'_'+dataset+'_'+str(random.randint(1, 10000)), type=str, metavar='PATH',
                     help='path to save prune model (default: current directory)')
 parser.add_argument('--arch', default='vgg', type=str, 
                     help='architecture to use')
@@ -81,7 +81,7 @@ if args.dataset == 'cifar10':
         batch_size=args.test_batch_size, shuffle=True, **kwargs)
 else:
     train_loader = torch.utils.data.DataLoader(
-        datasets.CIFAR100('./data.cifar100', train=True, download=True,
+        datasets.CIFAR100('./data/dataset/cifar100', train=True, download=True,
                        transform=transforms.Compose([
                            transforms.Pad(4),
                            transforms.RandomCrop(32),
@@ -91,14 +91,18 @@ else:
                        ])),
         batch_size=args.batch_size, shuffle=True, **kwargs)
     test_loader = torch.utils.data.DataLoader(
-        datasets.CIFAR100('./data.cifar100', train=False, transform=transforms.Compose([
+        datasets.CIFAR100('./data/dataset/cifar100', train=False, transform=transforms.Compose([
                            transforms.ToTensor(),
                            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
                        ])),
         batch_size=args.test_batch_size, shuffle=True, **kwargs)
 
 model = models.__dict__[args.arch](dataset=args.dataset, depth=args.depth)
-
+# i=0
+# for m in model.modules():
+#     if isinstance(m,nn.Conv2d):
+#         i+=1
+# import compute_flops
 if args.cuda:
     model.cuda()
 
